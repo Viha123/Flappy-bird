@@ -23,7 +23,7 @@ PIPE = pygame.image.load("flappy-bird-assets\sprites\pipe-green.png")
 class Bird:
     XPOS = 50  # must be constant
     YPOS = 200
-    FLYVEL = 1
+    FLYVEL = 0.8
     FLYVAL = 30
     DOWNVEL = 0.1
     def __init__(self):
@@ -34,12 +34,14 @@ class Bird:
         self.flappyJump = False
 
     def update(self, userInput):
-        if self.flappyJump:
-            self.jump()
-        if userInput[pygame.K_SPACE]:
+        self.pressed = False
+        if userInput[pygame.K_SPACE] and not self.pressed:
             self.flappyJump = True
             self.jump()
+            self.pressed = True
+
         if self.flappyJump == False:
+            self.pressed = False
             self.slideDown()
         else:
             self.flappyJump = False
@@ -47,16 +49,19 @@ class Bird:
     def jump(self):
         self.image = YELLOWBIRD[2] 
         self.flappyRect = self.image.get_rect()#gets x and y values
-        if self.flappyJump and self.FLYVEL > -0.5:
-            self.YPOS -= self.FLYVAL*self.FLYVEL
-            self.FLYVEL -= 0.05
-        if self.FLYVEL <= -0.3:
-            self.FLYVEL = 1.25
+        self.YPOS -= self.FLYVAL*self.FLYVEL
+        self.FLYVAL -= 10
+        print(self.FLYVAL)
+        if self.FLYVAL < -20:
+            self.FLYVAL = 35
+        
 
     def slideDown(self):
+        self.FLYVAL = 35
         self.image = pygame.transform.rotate(YELLOWBIRD[1],-30)
         self.YPOS += self.FLYVAL*self.DOWNVEL
-        self.DOWNVEL += 0.005
+        self.DOWNVEL += 0.001
+        
 
     def draw(self, WIN):
         WIN.blit(self.image, (self.XPOS, self.YPOS))
@@ -109,7 +114,7 @@ def main():
         player.draw(WIN)
         player.update(input)
         pygame.display.update()
-        clock.tick(45)
+        clock.tick(20)
 
 
 main()
