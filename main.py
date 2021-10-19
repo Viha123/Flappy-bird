@@ -97,11 +97,27 @@ class Pipe:
     def __init__(self):
         self.imageDown = PIPE
         self.imageUp = pygame.transform.rotate(PIPE,180)
+        self.imageWidth = self.imageDown.get_width()
         self.pipeX = 220 #both x values always the same
+        self.downPipeMaxY = 400 #down is the down pipe and up is the up pipe
+        self.downPipeMinY = 180
+        self.newRand()
+        
+    def newRand(self):
+        self.pipeYDown = random.randrange(
+            self.downPipeMinY, self.downPipeMaxY)  # 250,420
+        self.gap = 430
+        self.pipeYUp = self.pipeYDown - self.gap
 
+    def update(self):
+        self.pipeX -= 5
+        if self.pipeX <= -self.imageWidth:
+            self.pipeX = 300
+            self.newRand()
+        
     def draw(self,WIN):
-        WIN.blit(self.imageDown,(self.pipeX,300))
-        WIN.blit(self.imageUp,(self.pipeX,-200))
+        WIN.blit(self.imageDown, (self.pipeX,self.pipeYDown))  # self.pipeYDown
+        WIN.blit(self.imageUp, (self.pipeX,self.pipeYUp)) #self.pipeYUp
 
 
 def main():
@@ -110,7 +126,7 @@ def main():
     clock = pygame.time.Clock()
     bg = Background()
     ground = Base()
-    obs = Pipe()
+    obs1 = Pipe()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -119,10 +135,10 @@ def main():
         WIN.fill((255, 255, 255))
 
         input = pygame.key.get_pressed()
-        
         bg.draw(WIN) #very background 
         ground.updateBase()
-        obs.draw(WIN)
+        obs1.update()
+        obs1.draw(WIN)
         ground.draw(WIN)
         player.draw(WIN)
         player.update(input)
