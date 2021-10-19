@@ -1,4 +1,5 @@
 import pygame
+import random
 pygame.init()
 
 winWidth = 288
@@ -6,7 +7,9 @@ winHeight = 512
 
 WIN = pygame.display.set_mode((winWidth, winHeight))
 pygame.display.set_caption("Flappy Bird")
-YELLOWBIRD = [pygame.image.load("flappy-bird-assets\sprites\yellowbird-downflap.png"),
+ICON = pygame.image.load("flappy-bird-assets\Favicon.ico")
+pygame.display.set_icon(ICON)
+YELLOWBIRD = [pygame.image.load         ("flappy-bird-assets\sprites\yellowbird-downflap.png"),
             pygame.image.load("flappy-bird-assets\sprites\yellowbird-midflap.png"),
             pygame.image.load("flappy-bird-assets\sprites\yellowbird-upflap.png")]
 
@@ -50,7 +53,6 @@ class Bird:
         if self.FLYVAL < -20:
             self.FLYVAL = 35
         
-
     def slideDown(self):
         self.FLYVAL = 35
         self.image = pygame.transform.rotate(YELLOWBIRD[1],-30)
@@ -62,27 +64,44 @@ class Bird:
     def draw(self, WIN):
         WIN.blit(self.image, (self.XPOS, self.YPOS))
 
-class Background():
+class Base:
     def __init__(self):
-        self.image = BACKGROUND
         self.base = BASE
-        self.bg_width = self.image.get_width()
-        self.bgX = 0
-        self.bgY = 0
-        self.base_width = self.image.get_width()
+        self.base_width = self.base.get_width()
         self.baseX = 0
         self.baseY = 425
 
     def updateBase(self):
+        self.baseX -= 5
         if(self.baseX <= -self.base_width):
             self.baseX = 0
-        self.baseX -= 5
-
+            self.baseX -= 5
     def draw(self,WIN):
-        WIN.blit(self.image,(self.bgX,self.bgY))
-        WIN.blit(self.image,(self.bgX+self.bg_width,self.bgY))
         WIN.blit(self.base, (self.baseX, self.baseY))
         WIN.blit(self.base, (self.baseX+self.base_width, self.baseY))
+
+class Background:
+    def __init__(self):
+        self.image = BACKGROUND
+        self.bg_width = self.image.get_width()
+        self.bgX = 0
+        self.bgY = 0
+
+    def draw(self, WIN):
+        WIN.blit(self.image, (self.bgX, self.bgY))
+        WIN.blit(self.image, (self.bgX+self.bg_width, self.bgY))
+
+
+class Pipe:
+    #2 pipes max at a time. as soon as the second pipe leaves another can come
+    def __init__(self):
+        self.imageDown = PIPE
+        self.imageUp = pygame.transform.rotate(PIPE,180)
+        self.pipeX = 220 #both x values always the same
+
+    def draw(self,WIN):
+        WIN.blit(self.imageDown,(self.pipeX,300))
+        WIN.blit(self.imageUp,(self.pipeX,-200))
 
 
 def main():
@@ -90,7 +109,8 @@ def main():
     player = Bird()
     clock = pygame.time.Clock()
     bg = Background()
-    # pygame.blit(WIN,BACKGROUND)
+    ground = Base()
+    obs = Pipe()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -99,8 +119,11 @@ def main():
         WIN.fill((255, 255, 255))
 
         input = pygame.key.get_pressed()
-        bg.updateBase()
-        bg.draw(WIN)
+        
+        bg.draw(WIN) #very background 
+        ground.updateBase()
+        obs.draw(WIN)
+        ground.draw(WIN)
         player.draw(WIN)
         player.update(input)
         pygame.display.update()
