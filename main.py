@@ -28,9 +28,6 @@ class Bird:
     DOWNVEL = 0.1
     def __init__(self):
         self.image = YELLOWBIRD[0]
-        self.flappyRect = self.image.get_rect()  # getting current coordinates
-        self.flappyRect.x = self.XPOS  # current x cor
-        self.flappyRect.y = self.YPOS  # current y cor
         self.flappyJump = False
 
     def update(self, userInput):
@@ -48,10 +45,8 @@ class Bird:
 
     def jump(self):
         self.image = YELLOWBIRD[2] 
-        self.flappyRect = self.image.get_rect()#gets x and y values
         self.YPOS -= self.FLYVAL*self.FLYVEL
         self.FLYVAL -= 10
-        print(self.FLYVAL)
         if self.FLYVAL < -20:
             self.FLYVAL = 35
         
@@ -61,7 +56,8 @@ class Bird:
         self.image = pygame.transform.rotate(YELLOWBIRD[1],-30)
         self.YPOS += self.FLYVAL*self.DOWNVEL
         self.DOWNVEL += 0.001
-        
+        if self.YPOS >= 415:
+            self.YPOS = 425
 
     def draw(self, WIN):
         WIN.blit(self.image, (self.XPOS, self.YPOS))
@@ -77,13 +73,8 @@ class Background():
         self.baseX = 0
         self.baseY = 425
 
-    def update(self):
-        if(self.bgX <= -self.bg_width):
-            self.bgX = 0
-            #self.bgX -= self.bg_width
-        self.bgX -= 5
     def updateBase(self):
-        if(self.baseX <= self.base_width):
+        if(self.baseX <= -self.base_width):
             self.baseX = 0
         self.baseX -= 5
 
@@ -108,7 +99,6 @@ def main():
         WIN.fill((255, 255, 255))
 
         input = pygame.key.get_pressed()
-        bg.update()
         bg.updateBase()
         bg.draw(WIN)
         player.draw(WIN)
