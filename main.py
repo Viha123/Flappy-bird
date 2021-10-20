@@ -1,5 +1,6 @@
 import pygame
 import random
+import loadImages
 pygame.init()
 
 winWidth = 288
@@ -9,25 +10,7 @@ WIN = pygame.display.set_mode((winWidth, winHeight))
 pygame.display.set_caption("Flappy Bird")
 ICON = pygame.image.load("flappy-bird-assets\Favicon.ico")
 pygame.display.set_icon(ICON)
-YELLOWBIRD = [pygame.image.load         ("flappy-bird-assets\sprites\yellowbird-downflap.png"),
-            pygame.image.load("flappy-bird-assets\sprites\yellowbird-midflap.png"),
-            pygame.image.load("flappy-bird-assets\sprites\yellowbird-upflap.png")]
 
-BACKGROUND = pygame.image.load("flappy-bird-assets\sprites\Background-day.png")
-BASE = pygame.image.load("flappy-bird-assets\sprites\Base.png")
-GAMEOVER = pygame.image.load("flappy-bird-assets\sprites\gameover.png")
-MESSAGE = pygame.image.load("flappy-bird-assets\sprites\message.png")
-PIPE = pygame.image.load("flappy-bird-assets\sprites\pipe-green.png")
-ZERO = pygame.image.load("flappy-bird-assets\sprites\zero.png")
-ONE = pygame.image.load("flappy-bird-assets\sprites\one.png")
-TWO = pygame.image.load("flappy-bird-assets\sprites\Two.png")
-THREE = pygame.image.load("flappy-bird-assets\sprites\Three.png")
-FOUR = pygame.image.load("flappy-bird-assets\sprites\Four.png")
-FIVE = pygame.image.load("flappy-bird-assets\sprites\Five.png")
-SIX = pygame.image.load("flappy-bird-assets\sprites\six.png")
-SEVEN = pygame.image.load("flappy-bird-assets\sprites\seven.png")
-EIGHT = pygame.image.load("flappy-bird-assets\sprites\8.png")
-NINE = pygame.image.load("flappy-bird-assets\sprites\9.png")
 # LOGIC
 # if flappy jump is false after initial start, then continue falling, but if true implement the jump
 
@@ -39,7 +22,7 @@ class Bird:
     FLYVAL = 30
     DOWNVEL = 0.1
     def __init__(self):
-        self.image = YELLOWBIRD[0]
+        self.image = loadImages.YELLOWBIRD[0]
         self.flappyJump = False
         self.imageRect = self.image.get_rect()  
         self.imageWidth = self.image.get_width()
@@ -62,7 +45,7 @@ class Bird:
 
     def jump(self):
         self.imageRect = self.image.get_rect()
-        self.image = YELLOWBIRD[2] 
+        self.image = loadImages.YELLOWBIRD[2] 
         self.YPOS -= self.FLYVAL*self.FLYVEL
         self.FLYVAL -= 10
         if self.FLYVAL < -20:
@@ -71,7 +54,7 @@ class Bird:
     def slideDown(self):
         self.FLYVAL = 35
         self.imageRect = self.image.get_rect()
-        self.image = pygame.transform.rotate(YELLOWBIRD[1],-30)
+        self.image = pygame.transform.rotate(loadImages.YELLOWBIRD[1],-30)
         self.YPOS += self.FLYVAL*self.DOWNVEL
         self.DOWNVEL += 0.001
         if self.YPOS >= 415:
@@ -83,7 +66,7 @@ class Bird:
 
 class Base:
     def __init__(self):
-        self.base = BASE
+        self.base = loadImages.BASE
         self.base_width = self.base.get_width()
         self.baseX = 0
         self.baseY = 425
@@ -100,7 +83,7 @@ class Base:
 
 class Background:
     def __init__(self):
-        self.image = BACKGROUND
+        self.image = loadImages.BACKGROUND
         self.bg_width = self.image.get_width()
         self.bgX = 0
         self.bgY = 0
@@ -113,8 +96,8 @@ class Background:
 class Pipe():
     #2 pipes max at a time. as soon as the second pipe leaves another can come
     def __init__(self):
-        self.imageDown = PIPE
-        self.imageUp = pygame.transform.rotate(PIPE,180)
+        self.imageDown = loadImages.PIPE
+        self.imageUp = pygame.transform.rotate(loadImages.PIPE,180)
         self.imageWidth = self.imageDown.get_width()
         self.imageDownRect= self.imageDown.get_rect()
         self.imageUpRect = self.imageUp.get_rect()
