@@ -24,7 +24,7 @@ PIPE = pygame.image.load("flappy-bird-assets\sprites\pipe-green.png")
 
 
 class Bird:
-    XPOS = 50  # must be constant
+    XPOS = 50
     YPOS = 200
     FLYVEL = 0.8
     FLYVAL = 30
@@ -32,9 +32,14 @@ class Bird:
     def __init__(self):
         self.image = YELLOWBIRD[0]
         self.flappyJump = False
+        self.imageRect = self.image.get_rect()  
+        self.imageWidth = self.image.get_width()
+        self.imageRect.x = self.XPOS
+        self.imageRect.y = self.YPOS
 
     def update(self, userInput):
         self.pressed = False
+        self.imageRect = self.image.get_rect()
         if userInput[pygame.K_SPACE] and not self.pressed:
             self.flappyJump = True
             self.jump()
@@ -47,6 +52,7 @@ class Bird:
             self.flappyJump = False
 
     def jump(self):
+        self.imageRect = self.image.get_rect()
         self.image = YELLOWBIRD[2] 
         self.YPOS -= self.FLYVAL*self.FLYVEL
         self.FLYVAL -= 10
@@ -55,6 +61,7 @@ class Bird:
         
     def slideDown(self):
         self.FLYVAL = 35
+        self.imageRect = self.image.get_rect()
         self.image = pygame.transform.rotate(YELLOWBIRD[1],-30)
         self.YPOS += self.FLYVAL*self.DOWNVEL
         self.DOWNVEL += 0.001
@@ -62,6 +69,7 @@ class Bird:
             self.YPOS = 425
 
     def draw(self, WIN):
+        self.imageRect = self.image.get_rect()
         WIN.blit(self.image, (self.XPOS, self.YPOS))
 
 class Base:
@@ -70,6 +78,7 @@ class Base:
         self.base_width = self.base.get_width()
         self.baseX = 0
         self.baseY = 425
+        self.baseRect = self.base.get_rect()
 
     def updateBase(self):
         self.baseX -= 5
@@ -92,48 +101,67 @@ class Background:
         WIN.blit(self.image, (self.bgX+self.bg_width, self.bgY))
 
 
-class Pipe:
+class Pipe():
     #2 pipes max at a time. as soon as the second pipe leaves another can come
     def __init__(self):
         self.imageDown = PIPE
         self.imageUp = pygame.transform.rotate(PIPE,180)
         self.imageWidth = self.imageDown.get_width()
+        self.imageDownRect= self.imageDown.get_rect()
+        self.imageUpRect = self.imageUp.get_rect()
         self.pipeX = 220 #both x values always the same
         self.downPipeMaxY = 400 #down is the down pipe and up is the up pipe
         self.downPipeMinY = 180
         self.newRand()
         
+
+        
     def newRand(self):
+        self.imageDownRect = self.imageDown.get_rect()
+        self.imageUpRect = self.imageUp.get_rect()
         self.pipeYDown = random.randrange(
             self.downPipeMinY, self.downPipeMaxY)  # 250,420
         self.gap = 430
         self.pipeYUp = self.pipeYDown - self.gap
 
     def update(self):
+        self.imageDownRect = self.imageDown.get_rect()
+        self.imageUpRect = self.imageUp.get_rect()
         self.pipeX -= 5
         if self.pipeX <= -self.imageWidth:
             self.pipeX = 300
             self.newRand()
         
     def draw(self,WIN):
+        self.imageDownRect = self.imageDown.get_rect()
+        self.imageUpRect = self.imageUp.get_rect()
         WIN.blit(self.imageDown, (self.pipeX,self.pipeYDown))  # self.pipeYDown
         WIN.blit(self.imageUp, (self.pipeX,self.pipeYUp)) #self.pipeYUp
 
-
+player = Bird()
+clock = pygame.time.Clock()
+bg = Background()
+ground = Base()
+obs1 = Pipe()
+deathCount = 0
+def checkAbove():
+    if ((player.YPOS < (obs1.pipeYUp+320)) and (player.XPOS > obs1.pipeX) and (player.XPOS < (obs1.pipeX + obs1.imageWidth))):
+        return True
+    else:
+        return False
+def checkBelow():
+    if ((player.YPOS > (obs1.pipeYDown)) and (player.XPOS > obs1.pipeX) and (player.XPOS < (obs1.pipeX + obs1.imageWidth))):
+        return True
+    else:
+        return False
 def main():
     run = True
-    player = Bird()
-    clock = pygame.time.Clock()
-    bg = Background()
-    ground = Base()
-    obs1 = Pipe()
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
         WIN.fill((255, 255, 255))
-
         input = pygame.key.get_pressed()
         bg.draw(WIN) #very background 
         ground.updateBase()
@@ -142,6 +170,10 @@ def main():
         ground.draw(WIN)
         player.draw(WIN)
         player.update(input)
+        print(obs1.pipeYUp)
+        if(checkAbove() or checkBelow()): #collision detection
+            pygame.time.delay(1000)
+        
         pygame.display.update()
         clock.tick(20)
 
