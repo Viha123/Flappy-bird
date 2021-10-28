@@ -10,11 +10,11 @@ WIN = pygame.display.set_mode((winWidth, winHeight))
 pygame.display.set_caption("Flappy Bird")
 ICON = pygame.image.load("flappy-bird-assets\Favicon.ico")
 pygame.display.set_icon(ICON)
-
+global score
 # LOGIC
 # if flappy jump is false after initial start, then continue falling, but if true implement the jump
 
-
+font = pygame.font.Font("freesansbold.ttf", 15)
 class Bird:
     XPOS = 50
     YPOS = 200
@@ -146,8 +146,39 @@ def checkBelow():
         return True
     else:
         return False
-def main():
+def deathMessage(deathCount):
     run = True
+    while run: 
+        if deathCount == 1:
+            text = font.render("Press any key to restart", True, (0,0,0))
+            textRect=text.get_rect()
+            WIN.blit(text, (winWidth/4,winHeight/2))
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    deathCount = 0
+                    score = 0
+                    main()
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+            
+        if deathCount == 0:
+            WIN.fill((255,255,255))
+            text = font.render("Press any key to start", True, (0,0,0))
+            textRect = text.get_rect()
+            WIN.blit(text, textRect)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    run = False
+                    main()
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+
+def main():
+    score = 0
+    run = True
+    obs1.pipeX = 220
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -164,10 +195,12 @@ def main():
         player.update(input)
         print(obs1.pipeYUp)
         if(checkAbove() or checkBelow()): #collision detection
-            pygame.time.delay(1000)
-        
+            deathMessage(1)
+        else:
+            score += 1
+            print(score)
         pygame.display.update()
         clock.tick(20)
-
-
+WIN.fill((255, 255, 255))
+deathMessage(0)
 main()
