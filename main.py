@@ -175,6 +175,7 @@ def deathMessage(deathCount):
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
+
 def main():
     score = 0
     run = True
@@ -193,12 +194,12 @@ def main():
         ground.draw(WIN)
         player.draw(WIN)
         player.update(input)
-        print(obs1.pipeYUp)
         if(checkAbove() or checkBelow()): #collision detection
             deathMessage(1)
-        else:
+        if(player.XPOS > obs1.pipeX and player.XPOS < obs1.pipeX + 10 ): #score increases when player has crossed 5 px after the pipe
             score += 1
-            print(score)
+            
+
         pygame.display.update()
         clock.tick(20)
 WIN.fill((255, 255, 255))
