@@ -14,7 +14,7 @@ global score
 # LOGIC
 # if flappy jump is false after initial start, then continue falling, but if true implement the jump
 
-font = pygame.font.Font("freesansbold.ttf", 15)
+font = pygame.font.Font("freesansbold.ttf", 20)
 class Bird:
     XPOS = 50
     YPOS = 200
@@ -146,13 +146,15 @@ def checkBelow():
         return True
     else:
         return False
-def deathMessage(deathCount):
+def deathMessage(deathCount,score):
     run = True
     while run: 
         if deathCount == 1:
             text = font.render("Press any key to restart", True, (0,0,0))
+            text2 = font.render("Your score was" + str(score),True,(0,0,0))
             textRect=text.get_rect()
             WIN.blit(text, (winWidth/4,winHeight/2))
+            WIN.blit(text2, (winWidth/4, winHeight/2 + 20))
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -175,9 +177,19 @@ def deathMessage(deathCount):
                 if event.type == pygame.QUIT:
                     pygame.quit()
 
+def scorePrint(score):
+    #its fine I'll just blit numbers onto the screen
+    font = pygame.font.Font("freesansbold.ttf", 30)
+    text = font.render(str(score), True, (0,0,0))
+    textRect = text.get_rect()
+    
+    WIN.blit(text, (winWidth/2 - (textRect.x), 30) )
+    pygame.display.update()
+    return score
 
 def main():
     score = 0
+    scorePrint(score)
     run = True
     obs1.pipeX = 220
     while run:
@@ -195,13 +207,13 @@ def main():
         player.draw(WIN)
         player.update(input)
         if(checkAbove() or checkBelow()): #collision detection
-            deathMessage(1)
+            deathMessage(1,score)
         if(player.XPOS > obs1.pipeX and player.XPOS < obs1.pipeX + 10 ): #score increases when player has crossed 5 px after the pipe
             score += 1
             
-
+        scorePrint(score)
         pygame.display.update()
         clock.tick(20)
 WIN.fill((255, 255, 255))
-deathMessage(0)
+deathMessage(0,score = 0)
 main()
