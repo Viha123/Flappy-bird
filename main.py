@@ -4,7 +4,7 @@ import loadImages
 pygame.init()
 
 winWidth = 288
-winHeight = 512
+winHeight = 515
 
 WIN = pygame.display.set_mode((winWidth, winHeight))
 pygame.display.set_caption("Flappy Bird")
